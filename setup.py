@@ -46,7 +46,7 @@ setup(
         "Bug Reports": (project_homepage + "/issues"),
         "Source": (project_homepage + "/tree/master"),
     },
-    packages=["telebot"],
+    packages=["."],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
