@@ -24,10 +24,8 @@ class BotApp:
         self.application = Application.builder().token(bot_token).build()
         self._cmds = []
 
-    def command(self, name=None, desc=None, text=False):
+    def command(self, name=None, desc=None, text=False, enabled=True):
         def wrapper(func):
-            if name: self._cmds.append((name, desc))
-
             def wrapped_func(*args, **kwargs):
                 logging.info(f"invoking command: {func.__name__}")
 
@@ -37,20 +35,19 @@ class BotApp:
 
                 return func(*args, **kwargs)
 
-            if name: logging.info(f"declaring command: {name}")
-            if text:
-                self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, wrapped_func))
-            else:
-                self.application.add_handler(CommandHandler(name, wrapped_func))
+            if enabled:
+                if text:
+                    self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, wrapped_func))
+                else:
+                    logging.info(f"declaring command: {name}")
+                    self._cmds.append((name, desc))
+                    self.application.add_handler(CommandHandler(name, wrapped_func))
             return wrapped_func
 
         return wrapper
 
     def job(self, time=None, interval=None, enabled=True):
         def wrapper(func):
-            if enabled:
-                logging.info(
-                    f'scheduling {func.__name__} at: {dateutil.parser.parse(time).time() if time else interval}')
 
             def wrapped_func(*args, **kwargs):
                 logging.info(f"invoking job: {func.__name__}")
@@ -59,6 +56,8 @@ class BotApp:
                 return result
 
             if enabled:
+                logging.info(
+                    f'scheduling {func.__name__} at: {dateutil.parser.parse(time).time() if time else interval}')
                 wrapped_func.__name__ = f'w/{func.__name__}'
                 if time:
                     self.application.job_queue.run_daily(wrapped_func, time=dateutil.parser.parse(time).time())
