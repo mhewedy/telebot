@@ -44,7 +44,7 @@ setup(
         "How Tos": (project_homepage + "/tree/master/docs"),
         "Examples": (project_homepage + "/tree/master/quickstart_templates"),
         "Bug Reports": (project_homepage + "/issues"),
-        "Source": (project_homepage + "/tree/master/telebot"),
+        "Source": (project_homepage + "/tree/master"),
     },
     packages=["telebot"],
     classifiers=[
