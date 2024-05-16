@@ -10,14 +10,18 @@ logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging = logging.getLogger(__name__)
 
-chat_id = os.getenv("CHAT_ID")
-logging.info(f'CHAT_ID: {chat_id}')
-
 
 class BotApp:
 
     def __init__(self):
-        self.application = Application.builder().token(os.getenv("BOT_TOKEN")).build()
+        self.chat_id = os.getenv("CHAT_ID")
+        bot_token = os.getenv("BOT_TOKEN")
+
+        if self.chat_id is None or bot_token is None:
+            raise ValueError("both CHAT_ID and BOT_TOKEN env vars should be set!")
+
+        logging.info(f'CHAT_ID: {self.chat_id}')
+        self.application = Application.builder().token(bot_token).build()
         self._cmds = []
 
     def command(self, name=None, desc=None, text=False):
@@ -25,12 +29,11 @@ class BotApp:
             if name: self._cmds.append((name, desc))
 
             def wrapped_func(*args, **kwargs):
-                global chat_id
                 logging.info(f"invoking command: {func.__name__}")
 
                 (update, _) = args
-                chat_id = update.edited_message.chat_id if update.edited_message else update.message.chat_id
-                logging.info(f'setting g_chat_id to: {chat_id}')
+                self.chat_id = update.edited_message.chat_id if update.edited_message else update.message.chat_id
+                logging.info(f'setting chat_id to: {self.chat_id}')
 
                 return func(*args, **kwargs)
 
@@ -43,20 +46,24 @@ class BotApp:
 
         return wrapper
 
-    def job(self, time, enabled=True):
+    def job(self, time=None, interval=None, enabled=True):
         def wrapper(func):
             if enabled:
-                logging.info(f'scheduling {func.__name__} at: {dateutil.parser.parse(time).time()} UTC')
+                logging.info(
+                    f'scheduling {func.__name__} at: {dateutil.parser.parse(time).time() if time else interval}')
 
             def wrapped_func(*args, **kwargs):
                 logging.info(f"invoking job: {func.__name__}")
-                new_args = args + (chat_id,)
+                new_args = args + (self.chat_id,)
                 result = func(*new_args, **kwargs)
                 return result
 
             if enabled:
                 wrapped_func.__name__ = f'w/{func.__name__}'
-                self.application.job_queue.run_daily(wrapped_func, time=dateutil.parser.parse(time).time())
+                if time:
+                    self.application.job_queue.run_daily(wrapped_func, time=dateutil.parser.parse(time).time())
+                else:
+                    self.application.job_queue.run_repeating(wrapped_func, interval=interval)
             return wrapped_func
 
         return wrapper
