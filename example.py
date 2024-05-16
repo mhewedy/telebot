@@ -11,18 +11,23 @@ os.environ["BOT_TOKEN"] = "<put bot token>"
 bot = BotApp()
 
 
+@bot.command(text=True)
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text(update.message.text)
+
+
 @bot.command(name="ping", desc="test the bot")
-async def ping_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Pong!")
 
 
-@bot.job(time="08:00")
-async def send_lunch_headsup(context: ContextTypes.DEFAULT_TYPE, chat_id):
+@bot.job(time="08:00", enabled=False)
+async def hell_timer(context: ContextTypes.DEFAULT_TYPE, chat_id):
     await context.bot.send_message(chat_id, text="hello from timer")
 
 
-@bot.job(interval=5)
-async def send_lunch_headsup(context: ContextTypes.DEFAULT_TYPE, chat_id):
+@bot.job(interval=5, enabled=True)
+async def hello_interval(context: ContextTypes.DEFAULT_TYPE, chat_id):
     await context.bot.send_message(chat_id, text="hello from interval")
 
 
