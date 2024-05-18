@@ -15,15 +15,6 @@ pip install --upgrade --force-reinstall git+https://github.com/mhewedy/telebot
 ### Example:
 
 ```python
-import os
-
-from telegram import Update
-from telegram.ext import ContextTypes
-
-from telebot import BotApp
-
-os.environ["CHAT_ID"] = "<put chat id>"
-os.environ["BOT_TOKEN"] = "<put bot token>"
 
 bot = BotApp()
 
@@ -47,10 +38,6 @@ async def hell_timer(context: ContextTypes.DEFAULT_TYPE, chat_id):
 async def hello_interval(context: ContextTypes.DEFAULT_TYPE, chat_id):
     await context.bot.send_message(chat_id, text="hello from interval")
 
-
-if __name__ == '__main__':
-    bot.help()
-    bot.application.run_polling(allowed_updates=Update.ALL_TYPES)
 ```
 
 see example.py for the whole running example
