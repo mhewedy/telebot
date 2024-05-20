@@ -11,12 +11,12 @@ os.environ["BOT_TOKEN"] = "<put bot token>"
 bot = BotApp()
 
 
-@bot.command(text=True)
+@bot.command(text=True, enabled=True)
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(update.message.text)
 
 
-@bot.command(name="ping", desc="test the bot")
+@bot.command(name="ping", desc="test the bot", hidden=False)
 async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Pong!")
 
