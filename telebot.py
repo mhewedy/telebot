@@ -24,7 +24,7 @@ class BotApp:
         self.application = Application.builder().token(bot_token).build()
         self._cmds = []
 
-    def command(self, name=None, desc=None, text=False, enabled=True):
+    def command(self, name=None, desc=None, text=False, enabled=True, hidden=False):
         def wrapper(func):
             def wrapped_func(*args, **kwargs):
                 logging.info(f"invoking command: {func.__name__}")
@@ -40,7 +40,8 @@ class BotApp:
                     self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, wrapped_func))
                 else:
                     logging.info(f"declaring command: {name}")
-                    self._cmds.append((name, desc))
+                    if not hidden:
+                        self._cmds.append((name, desc))
                     self.application.add_handler(CommandHandler(name, wrapped_func))
             return wrapped_func
 
