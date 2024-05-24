@@ -47,7 +47,7 @@ class BotApp:
 
         return wrapper
 
-    def job(self, time=None, interval=None, enabled=True):
+    def job(self, time=None, days=tuple(range(7)), interval=None, enabled=True):
         def wrapper(func):
 
             def wrapped_func(*args, **kwargs):
@@ -61,7 +61,8 @@ class BotApp:
                     f'scheduling {func.__name__} at: {dateutil.parser.parse(time).time() if time else interval}')
                 wrapped_func.__name__ = f'w/{func.__name__}'
                 if time:
-                    self.application.job_queue.run_daily(wrapped_func, time=dateutil.parser.parse(time).time())
+                    self.application.job_queue.run_daily(wrapped_func, time=dateutil.parser.parse(time).time(),
+                                                         days=days)
                 else:
                     self.application.job_queue.run_repeating(wrapped_func, interval=interval)
             return wrapped_func
