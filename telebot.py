@@ -1,3 +1,4 @@
+import calendar
 import logging
 import os
 
@@ -58,7 +59,8 @@ class BotApp:
 
             if enabled:
                 logging.info(
-                    f'scheduling {func.__name__} at: {dateutil.parser.parse(time).time() if time else interval}')
+                    f'scheduling {func.__name__} at: {dateutil.parser.parse(time).time() if time else interval} '
+                    + (f'on {[calendar.day_name[d] for d in days]}' if not interval else ''))
                 wrapped_func.__name__ = f'w/{func.__name__}'
                 if time:
                     self.application.job_queue.run_daily(wrapped_func, time=dateutil.parser.parse(time).time(),

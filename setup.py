@@ -26,7 +26,7 @@ documentation = readall("README.md")
 # metadata = dict(
 #     re.findall(r"""__([a-z]+)__ = "([^"]+)""", readall("instapy", "__init__.py"))
 # )
-metadata = {"version": "0.0.6"}
+metadata = {"version": "0.0.7"}
 
 setup(
     name="telebot",
