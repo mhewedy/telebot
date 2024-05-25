@@ -1,4 +1,3 @@
-import calendar
 import logging
 import os
 
@@ -6,6 +5,8 @@ import dateutil.parser
 from telegram import Update
 from telegram.ext import Application
 from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters
+
+import day
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -60,7 +61,7 @@ class BotApp:
             if enabled:
                 logging.info(
                     f'scheduling {func.__name__} at: {dateutil.parser.parse(time).time() if time else interval} '
-                    + (f'on {[calendar.day_name[d] for d in days]}' if not interval else ''))
+                    + (f'on {[day.day_name(d) for d in days]}' if not interval else ''))
                 wrapped_func.__name__ = f'w/{func.__name__}'
                 if time:
                     self.application.job_queue.run_daily(wrapped_func, time=dateutil.parser.parse(time).time(),

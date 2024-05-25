@@ -3,6 +3,7 @@ import os
 from telegram import Update
 from telegram.ext import ContextTypes
 
+from day import *
 from telebot import BotApp
 
 os.environ["CHAT_ID"] = "<put chat id>"
@@ -21,7 +22,7 @@ async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Pong!")
 
 
-@bot.job(time="08:00", enabled=False)
+@bot.job(time="08:00", enabled=True, days=(SUNDAY,))
 async def hell_timer(context: ContextTypes.DEFAULT_TYPE, chat_id):
     await context.bot.send_message(chat_id, text="hello from timer")
 
